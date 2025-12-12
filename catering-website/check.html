@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="css\style.css">
+
+  <title>Checkout | Catering Service</title>
+  
+</head>
+<body>
+
+
+  <!-- Navbar -->
+  <header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="images/logo.png" alt="Catering Logo" />
+      <h1>Matoshree caterers</h1>
+    </div>
+
+    <!-- Navigation links -->
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="cart.html">Order</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="admin-login.html">Admin</a></li>
+    </ul>
+
+    <!-- Mobile Menu Toggle Button -->
+    <button class="menu-toggle">☰</button>
+  </nav>
+</header>
+
+<script>
+  const toggleBtn = document.querySelector(".menu-toggle");
+  const navLinks = document.querySelector(".nav-links");
+
+  toggleBtn.addEventListener("click", () => {
+    navLinks.classList.toggle("active");
+  });
+</script>
+
+
+  <div class="container">
+    <h2>Checkout</h2>
+
+    <label for="customerName">Name:</label>
+    <input type="text" id="customerName" placeholder="Enter your name" required>
+
+    <label for="customerMobile">Mobile Number:</label>
+    <input type="tel" id="customerMobile" placeholder="Enter 10-digit mobile number" maxlength="10" required>
+
+    <label for="order-date">Select Date:</label>
+    <input type="date" id="order-date" required>
+
+    <label for="people">Number of People:</label>
+    <input type="number" id="people" min="1" value="1" required>
+
+    <div id="order-summary"></div>
+
+    <button class="btn" id="paymentBtn">Proceed to Payment</button>
+  </div>
+
+
+<!-- Firebase Module Script -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.26.0/firebase-app.js";
+  import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/11.26.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAFcR7dpuPLCKxKVF8U21ogtLARx2djXpM",
+    authDomain: "caters-710ea.firebaseapp.com",
+    databaseURL: "https://caters-710ea-default-rtdb.firebaseio.com/",
+    projectId: "caters-710ea",
+    storageBucket: "caters-710ea.appspot.com",
+    messagingSenderId: "1058333296618",
+    appId: "1:1058333296618:web:ba63fac8c4fca4758f5493",
+    measurementId: "G-XFB81TQHKS"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app);
+
+  // ✅ Define a normal async function to save orders
+  export async function saveOrder(orderData) {
+    try {
+      await push(ref(database, 'orders/'), orderData);
+      alert("✅ Order saved to Firebase! Proceeding to payment...");
+      window.location.href = "payment.html";
+    } catch (err) {
+      alert("❌ Error saving order: " + err.message);
+    }
+  }
+</script>
+
+<!-- Your checkout logic -->
+<script type="module">
+  import { saveOrder } from './checkout.html'; // Import from the same file if using module
+
+  const order = JSON.parse(localStorage.getItem("orderDetails"));
+  const summaryDiv = document.getElementById("order-summary");
+
+  function renderOrderSummary() {
+    if (!order || !order.dishes || order.dishes.length === 0) {
+      summaryDiv.innerHTML = "<p>No order found ❌</p>";
+      return;
+    }
+
+    const numPeople = parseInt(document.getElementById("people").value) || 1;
+    let subtotal = 0;
+    let html = "<table><tr><th>Dish</th><th>Price (₹)</th><th>Total (₹)</th></tr>";
+
+    const dishesWithTotal = order.dishes.map(item => {
+      let price = typeof item.price === "string" ? parseFloat(item.price.replace(/[^0-9.]/g,'')) : item.price;
+      let total = price * numPeople;
+      subtotal += total;
+      html += `<tr><td>${item.name}</td><td>₹${price.toFixed(2)}</td><td>₹${total.toFixed(2)}</td></tr>`;
+      return { name: item.name, price: price, total: total };
+    });
+
+    const tax = subtotal * 0.05;
+    const service = subtotal * 0.10;
+    const grandTotal = subtotal + tax + service;
+
+    html += "</table>";
+    html += `<div class="totals">
+      <p>Subtotal: ₹${subtotal.toFixed(2)}</p>
+      <p>Tax (5%): ₹${tax.toFixed(2)}</p>
+      <p>Service Charge (10%): ₹${service.toFixed(2)}</p>
+      <h3>Total: ₹${grandTotal.toFixed(2)}</h3>
+    </div>`;
+
+    summaryDiv.innerHTML = html;
+    localStorage.setItem("finalBill", grandTotal.toFixed(2));
+    localStorage.setItem("dishesWithTotal", JSON.stringify(dishesWithTotal));
+  }
+
+  renderOrderSummary();
+  document.getElementById("people").addEventListener("input", renderOrderSummary);
+
+  document.getElementById("paymentBtn").addEventListener("click", async () => {
+    const name = document.getElementById("customerName").value.trim();
+    const mobile = document.getElementById("customerMobile").value.trim();
+    const date = document.getElementById("order-date").value;
+    const people = parseInt(document.getElementById("people").value);
+    const mobileRegex = /^[6-9]\d{9}$/;
+
+    if (!name) return alert("Enter your name");
+    if (!mobileRegex.test(mobile)) return alert("Enter a valid 10-digit mobile number");
+    if (!date) return alert("Select order date");
+    if (!people || people < 1) return alert("Enter number of people");
+
+    const orderData = {
+      customerName: name,
+      customerMobile: mobile,
+      orderDate: date,
+      numberOfPeople: people,
+      dishes: JSON.parse(localStorage.getItem("dishesWithTotal")),
+      subtotal: parseFloat(localStorage.getItem("finalBill")) - (parseFloat(localStorage.getItem("finalBill")) * 0.15),
+      tax: parseFloat(localStorage.getItem("finalBill")) * 0.05,
+      serviceCharge: parseFloat(localStorage.getItem("finalBill")) * 0.10,
+      total: parseFloat(localStorage.getItem("finalBill")),
+      status: "Pending",
+      createdAt: new Date().toISOString()
+    };
+
+    // ✅ Call the function directly
+    await saveOrder(orderData);
+  });
+</script>
+
+
+  
+   <footer>
+    <p>© 2025 Catering Service | All Rights Reserved</p>
+  </footer>
+
+  
+</body>
+</html>
+

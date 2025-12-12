@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Cart</title>
+  <link rel="stylesheet" href="css\style.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <header>
+  <nav class="navbar">
+    <div class="logo">
+      <img src="images/logo.png" alt="Catering Logo" />
+      <h1>Matoshree caterers</h1>
+    </div>
+
+    <!-- Navigation links -->
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="cart.html">Order</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="admin.html">Admin</a></li>
+    </ul>
+
+    <!-- Mobile Menu Toggle Button -->
+    <button class="menu-toggle">☰</button>
+  </nav>
+</header>
+
+<script>
+  const toggleBtn = document.querySelector(".menu-toggle");
+  const navLinks = document.querySelector(".nav-links");
+
+  toggleBtn.addEventListener("click", () => {
+    navLinks.classList.toggle("active");
+  });
+</script>
+
+  <!-- Order Section -->
+<section class="order-section">
+  <h2>Place Your Order</h2>
+  <form>
+    <div id="cart-items"></div>
+
+    
+
+    <div class="buttons">
+      <button type="button" class="btn" id="checkoutBtn">Proceed to Checkout</button>
+      <button type="button" class="btn clear-btn" id="clearCartBtn">Clear Cart</button>
+    </div>
+  </form>
+</section>
+
+<style>
+  .order-section {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 30px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    font-family: Arial, sans-serif;
+  }
+
+  .order-section h2 {
+    color: #ff7f50;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2rem;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  #cart-items table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  #cart-items th, #cart-items td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+
+  #cart-items th {
+    background: #ff7f50;
+    color: #fff;
+  }
+
+  label {
+    font-weight: bold;
+    margin-top: 10px;
+  }
+
+  input[type="date"], input[type="number"] {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+  }
+
+  .btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 10px;
+    background: #ff7f50;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.3s;
+  }
+
+  .btn:hover {
+    background: #ff5722;
+    transform: scale(1.05);
+  }
+
+  .clear-btn {
+    background: #ccc;
+    color: #333;
+  }
+
+  .clear-btn:hover {
+    background: #999;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .order-section {
+      padding: 20px 15px;
+    }
+
+    .buttons {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  const cartItemsContainer = document.getElementById("cart-items");
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  function renderCart() {
+    if (cart.length === 0) {
+      cartItemsContainer.innerHTML = "<p>Your cart is empty ❌</p>";
+    } else {
+      let html = "<h3>Items in your cart:</h3><table><tr><th>Select</th><th>Dish</th><th>Price</th></tr>";
+      cart.forEach(item => {
+        html += `<tr>
+          <td><input type="checkbox" name="menu-item" value="${item.name}" checked></td>
+          <td>${item.name}</td>
+          <td>${item.price}</td>
+        </tr>`;
+      });
+      html += "</table>";
+      cartItemsContainer.innerHTML = html;
+    }
+  }
+
+  renderCart();
+
+ document.getElementById("checkoutBtn").addEventListener("click", () => {
+    // Get all selected dishes
+    const selectedDishes = Array.from(document.querySelectorAll("input[name='menu-item']:checked"))
+        .map(cb => cb.value);
+
+    if (selectedDishes.length > 0) {
+        // Filter cart items based on selection
+        const selectedCartItems = cart.filter(item => selectedDishes.includes(item.name));
+
+        // Save only selected dishes
+        localStorage.setItem("orderDetails", JSON.stringify({ dishes: selectedCartItems }));
+
+        alert("✅ Order saved! Proceeding to checkout...");
+        window.location.href = "checkout.html";
+    } else {
+        alert("⚠️ Please select at least one dish.");
+    }
+});
+
+
+    document.getElementById("clearCartBtn").addEventListener("click", () => {
+    if (confirm("Are you sure you want to clear the cart?")) {
+      localStorage.removeItem("cart");
+      cart = [];
+      renderCart();
+    }
+  });
+</script>
+
+ <footer>
+    <p>© 2025 Catering Service | All Rights Reserved</p>
+  </footer>
+
+</body>
+</html>

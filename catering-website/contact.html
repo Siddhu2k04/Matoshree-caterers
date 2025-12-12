@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | Catering Service</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    /* Contact Page Specific Styles */
+    body { background: #f5f5f5; }
+
+    /* Hero Section */
+    .contact-hero {
+      background: linear-gradient(135deg, #f5f3f1, #d8d1ce);
+      color: rgb(15, 1, 1);
+      text-align: center;
+      padding: 70px 20px;
+    }
+    .contact-hero h2 { font-size: 2.5rem; margin-bottom: 10px; }
+    .contact-hero p { font-size: 1.2rem; }
+
+    /* Contact Cards */
+    .contact-cards {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      padding: 40px 20px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      width: 200px;
+      height: 200px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+    .card i {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .card:hover i { transform: rotate(15deg); }
+    .card span { font-weight: bold; font-size: 1rem; }
+
+    /* Footer Note */
+    .contact-note {
+      text-align: center;
+      margin: 40px 20px;
+      font-size: 1rem;
+      color: #555;
+    }
+
+    /* Responsive */
+    @media(max-width: 768px){
+      .contact-cards { gap: 15px; }
+    }
+    @media(max-width: 480px){
+      .contact-hero h2 { font-size: 2rem; }
+      .contact-hero p { font-size: 1rem; }
+      .card { width: 150px; height: 150px; }
+      .card i { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar (same as Home page) -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/logo.png" alt="Catering Logo">
+        <h1>Matoshree caterers</h1>
+      </div>
+     <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="cart.html">Order</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="admin-login.html">Admin</a></li>
+    </ul>
+      <button class="menu-toggle">☰</button>
+    </nav>
+  </header>
+
+  <script>
+    const toggleBtn = document.querySelector(".menu-toggle");
+    const navLinks = document.querySelector(".nav-links");
+    toggleBtn.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+  </script>
+
+  <!-- Hero Section -->
+  <section class="contact-hero">
+    <h2>Get in Touch with Us</h2>
+    <p>Reach out via Email, WhatsApp, Call, or Visit our Location</p>
+  </section>
+
+  <!-- Contact Cards -->
+  <section class="contact-cards">
+    <a href="mailto:nagesh143ghuge@gmail.com" class="card email">
+      <i class="fas fa-envelope"></i>
+      <span>Email</span>
+    </a>
+    <a href="https://maps.app.goo.gl/JqPB43UqZeTZxhSx7" target="_blank" class="card map">
+      <i class="fas fa-map-marker-alt"></i>
+      <span>Location</span>
+    </a>
+    <a href="https://wa.me/9767212467" target="_blank" class="card whatsapp">
+  <i class="fab fa-whatsapp"></i>
+  <span>WhatsApp</span>
+</a>
+
+    <a href="https://instagram.com/yourhandle" target="_blank" class="card instagram">
+      <i class="fab fa-instagram"></i>
+      <span>Instagram</span>
+    </a>
+    <a href="tel:+91 97672 12467" class="card phone">
+      <i class="fas fa-phone-alt"></i>
+      <span>Call</span>
+    </a>
+  </section>
+
+  <p class="contact-note">We are available 24/7. Tap any icon to contact us instantly!</p>
+
+
+   <footer>
+    <p>© 2025 Catering Service | All Rights Reserved</p>
+  </footer>
+
+</body>
+</html>

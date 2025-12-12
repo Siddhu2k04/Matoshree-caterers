@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | Catering Service</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navbar (same as Home page) -->
+  <header>
+    <nav class="navbar">
+      <div class="logo">
+        <img src="images/logo.png" alt="Catering Logo" />
+        <h1>Matoshree caterers</h1>
+      </div>
+
+      <!-- Navigation links -->
+      <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="menu.html">Menu</a></li>
+      <li><a href="cart.html">Order</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+      <li><a href="admin-login.html">Admin</a></li>
+    </ul>
+
+      <!-- Mobile Menu Toggle Button -->
+      <button class="menu-toggle">☰</button>
+    </nav>
+  </header>
+
+  <script>
+    const toggleBtn = document.querySelector(".menu-toggle");
+    const navLinks = document.querySelector(".nav-links");
+
+    toggleBtn.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+  </script>
+
+  <!-- Hero Section -->
+  
+
+  <!-- About Section -->
+  <section class="about-section">
+    <h2>About Us</h2>
+    <p>
+      We serve not just food, but unforgettable moments. Each dish is crafted with passion and a sprinkle of magic.  
+      Your celebration deserves flavors that linger in memory!
+    </p>
+
+    <div class="quote">
+      "Good food is the foundation of genuine happiness." 🌟
+    </div>
+
+    <div class="quote">
+      "Dil se banaya, har bite mein pyaar" ❤️  
+      (Made with love, every bite tells a story)
+    </div>
+
+    <div class="quote">
+      "आनंदी जेवण, सुंदर आठवणी – जेवणात आमची कला आणि प्रेम भरलेलं" ✨  
+      (Delightful food, beautiful memories – crafted with art & love)
+    </div>
+
+    <p>
+      From intimate dinners to grand parties, we make every meal a celebration. Let’s turn ordinary days into memorable feasts.
+    </p>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    © 2025 Catering Service | All Rights Reserved
+  </footer>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #fff7f0;
+      color: #333;
+    }
+
+   
+
+    /* Hero Section */
+    .hero {
+      background: url('images/catering-bg.jpg') center/cover no-repeat;
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-align: center;
+      font-size: 28px;
+      font-weight: bold;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+    }
+
+    /* About Section */
+    .about-section {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 25px;
+      background: #fff3e0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .about-section h2 { color: #ff9800; margin-bottom: 20px; }
+    .about-section p { font-size: 18px; line-height: 1.6; margin-bottom: 20px; }
+
+    .quote {
+      font-style: italic;
+      color: #555;
+      background: #fff7f0;
+      border-left: 4px solid #ff9800;
+      padding: 15px 20px;
+      margin: 20px 0;
+      font-size: 18px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #ff9800;
+      color: #fff;
+      margin-top: 40px;
+    }
+  </style>
+
+</body>
+</html>

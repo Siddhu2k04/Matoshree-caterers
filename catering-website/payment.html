@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payment | Catering Service</title>
+<style>
+ /* ---------------- BODY ---------------- */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------------- CONTAINER ---------------- */
+.container {
+  max-width: 450px;
+  margin: 50px auto;
+  background: #fff;
+  padding: 30px 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: transform 0.3s ease;
+}
+
+.container:hover {
+  transform: translateY(-3px);
+}
+
+/* ---------------- HEADINGS ---------------- */
+h2 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  color: #ff9800;
+}
+
+p.amount {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 10px 0 25px 0;
+}
+
+/* ---------------- QR IMAGE ---------------- */
+img {
+  max-width: 180px;
+  margin: 20px 0;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* ---------------- BUTTONS ---------------- */
+.btn, .method-btn, .return-btn {
+  padding: 12px 18px;
+  margin: 10px 0;
+  width: 100%;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.btn {
+  background: #ff9800;
+  color: #fff;
+}
+
+.btn:hover {
+  background: #e68900;
+}
+
+.method-btn {
+  background: #4caf50;
+  color: #fff;
+}
+
+.method-btn:hover {
+  background: #3e8e41;
+}
+
+.return-btn {
+  background: #ddd;
+  color: #333;
+}
+
+.return-btn:hover {
+  background: #ccc;
+}
+
+/* ---------------- SUCCESS MESSAGE ---------------- */
+/* SUCCESS MESSAGE WITH TICK */
+.success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #4caf50;
+  font-weight: bold;
+  margin-top: 15px;
+  font-size: 16px;
+}
+
+
+/* ---------------- RESPONSIVE ---------------- */
+@media (max-width: 500px) {
+  .container {
+    margin: 30px 15px;
+    padding: 25px 15px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  p.amount {
+    font-size: 18px;
+  }
+
+  .btn, .method-btn, .return-btn {
+    font-size: 15px;
+    padding: 10px 12px;
+  }
+
+  img {
+    max-width: 150px;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Payment Options</h2>
+  <p class="amount">Total Payable: ₹<span id="amount">0</span></p>
+
+  <h3>Scan QR Code to Pay</h3>
+  <img src="images/qr-code.png" alt="Scan to Pay">
+  <button class="btn" id="qrPaidBtn">I Have Paid</button>
+
+  <h3>Or Pay Cash on Delivery (COD)</h3>
+  <button class="method-btn" id="codBtn">Cash on Delivery</button>
+
+  <button class="return-btn" id="returnBtn">Return to Cart</button>
+
+  <!-- Confirmation Message -->
+  <div id="confirmation" class="success">
+    <span id="tick" style="display:none; font-size:24px;">✔️</span>
+    <span id="confirmationText"></span>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// 🔹 Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyAFcR7dpuPLCKxKVF8U21ogtLARx2djXpM",
+  authDomain: "caters-710ea.firebaseapp.com",
+  projectId: "caters-710ea",
+  storageBucket: "caters-710ea.appspot.com",
+  messagingSenderId: "1058333296618",
+  appId: "1:1058333296618:web:ba63fac8c4fca4758f5493"
+};
+
+// 🔹 Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🔹 DOM Elements
+const total = localStorage.getItem("finalBill") || 0;
+document.getElementById("amount").innerText = total;
+
+const confirmation = document.getElementById("confirmation");
+const tick = document.getElementById("tick");
+const confirmationText = document.getElementById("confirmationText");
+const orderId = localStorage.getItem("currentOrderId");
+
+// 🔹 Function to complete payment and update Firestore
+async function completePayment(message, paymentStatus) {
+  // Show tick + message
+  tick.style.display = "inline";
+  confirmationText.innerText = message;
+  confirmation.style.display = "flex";
+
+  if(orderId){
+    try {
+      const orderRef = doc(db, "orders", orderId);
+      await updateDoc(orderRef, { paymentStatus });
+    } catch (err) {
+      console.error("Error updating payment status:", err);
+    }
+  }
+
+  // Clear local storage
+  localStorage.removeItem("cart");
+  localStorage.removeItem("orderDetails");
+  localStorage.removeItem("finalBill");
+  localStorage.removeItem("currentOrderId");
+
+  // Redirect to home after 3 seconds
+  setTimeout(() => {
+    window.location.href = "index.html";
+  }, 3000);
+}
+
+// 🔹 Event Listeners
+document.getElementById("qrPaidBtn").addEventListener("click", () => {
+  completePayment("Payment confirmed via QR! Redirecting to Home...", "Paid");
+});
+
+document.getElementById("codBtn").addEventListener("click", () => {
+  completePayment("Order placed! Pay cash on delivery. Redirecting to Home...", "COD");
+});
+
+document.getElementById("returnBtn").addEventListener("click", () => {
+  window.location.href = "cart.html";
+});
+</script>
+
+
+</body>
+</html>

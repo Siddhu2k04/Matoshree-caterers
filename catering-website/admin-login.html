@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Auth | Catering Service</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  .auth-container {
+    background: #fff8f0;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+    width: 350px;
+    max-width: 90%;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+
+  .auth-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+  }
+
+  h2 {
+    margin-bottom: 30px;
+    font-size: 28px;
+    color: #ff7f50;
+    position: relative;
+  }
+
+  h2::after {
+    content: '';
+    width: 60px;
+    height: 3px;
+    background: #ff7f50;
+    display: block;
+    margin: 10px auto 0;
+    border-radius: 3px;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px 15px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #ff7f50;
+    box-shadow: 0 0 5px rgba(255,127,80,0.5);
+  }
+
+  button {
+    width: 100%;
+    padding: 12px 15px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 30px;
+    background: #ff7f50;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+  }
+
+  button:hover {
+    background: #ff5722;
+    transform: scale(1.05);
+  }
+
+  .error, .success {
+    font-size: 14px;
+    margin-top: 10px;
+    min-height: 18px;
+  }
+
+  .error { color: #d00000; }
+  .success { color: green; }
+
+  .toggle-link {
+    display: block;
+    margin-top: 15px;
+    color: #ff7f50;
+    cursor: pointer;
+    font-size: 14px;
+    text-decoration: underline;
+  }
+
+  @media (max-width: 480px) {
+    .auth-container {
+      padding: 30px 20px;
+    }
+
+    h2 {
+      font-size: 24px;
+    }
+
+    input, button {
+      font-size: 14px;
+      padding: 10px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="auth-container">
+  <h2 id="formTitle">Admin Login</h2>
+
+  <input type="email" id="email" placeholder="Email" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button id="actionBtn">Login</button>
+  <div class="error" id="errorMsg"></div>
+  <div class="success" id="successMsg"></div>
+  <span class="toggle-link" id="toggleForm">Don't have an account? Sign Up</span>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// Firebase Config
+const firebaseConfig = {
+  apiKey: "AIzaSyAFcR7dpuPLCKxKVF8U21ogtLARx2djXpM",
+  authDomain: "caters-710ea.firebaseapp.com",
+  projectId: "caters-710ea",
+  storageBucket: "caters-710ea.appspot.com",
+  messagingSenderId: "1058333296618",
+  appId: "1:1058333296618:web:ba63fac8c4fca4758f5493"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+const emailInput = document.getElementById("email");
+const passwordInput = document.getElementById("password");
+const actionBtn = document.getElementById("actionBtn");
+const errorMsg = document.getElementById("errorMsg");
+const successMsg = document.getElementById("successMsg");
+const toggleForm = document.getElementById("toggleForm");
+const formTitle = document.getElementById("formTitle");
+
+let isLogin = true; // true = login, false = signup
+
+function clearMessages() {
+  errorMsg.textContent = "";
+  successMsg.textContent = "";
+}
+
+// Toggle between login and signup
+toggleForm.addEventListener("click", () => {
+  isLogin = !isLogin;
+  formTitle.textContent = isLogin ? "Admin Login" : "Admin Sign Up";
+  actionBtn.textContent = isLogin ? "Login" : "Sign Up";
+  toggleForm.textContent = isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login";
+  clearMessages();
+});
+
+// Action Button Click
+actionBtn.addEventListener("click", async () => {
+  clearMessages();
+  const email = emailInput.value.trim();
+  const password = passwordInput.value;
+
+  if(!email || !password) {
+    errorMsg.textContent = "Please enter email and password.";
+    return;
+  }
+
+  try {
+    if(isLogin) {
+      await signInWithEmailAndPassword(auth, email, password);
+      successMsg.textContent = "Login successful! Redirecting...";
+      setTimeout(() => window.location.href = "admin.html", 1500);
+    } else {
+      await createUserWithEmailAndPassword(auth, email, password);
+      successMsg.textContent = "Account created! You can now login.";
+      isLogin = true;
+      formTitle.textContent = "Admin Login";
+      actionBtn.textContent = "Login";
+      toggleForm.textContent = "Don't have an account? Sign Up";
+      emailInput.value = "";
+      passwordInput.value = "";
+    }
+  } catch (err) {
+    errorMsg.textContent = err.message;
+    console.error(err);
+  }
+});
+</script>
+
+</body>
+</html>
